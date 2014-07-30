@@ -1,0 +1,21 @@
+{
+  "name": "cookie-consent",
+  "version": "0.0.1",
+  "authors": [
+    "Gerwin Sturm <scarygami@gmail.com>"
+  ],
+  "description": "Element to make it easier for you to display those annoying cookie messages.",
+  "keywords": "polymer, web-components, cookies",
+  "main": "cookie-consent.html",
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/Scarygami/cookie-consent/",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-toolbar": "Polymer/core-toolbar#master",
+    "paper-icon-button": "Polymer/paper-icon-button#master",
+    "polymer-cookie": "PolymerLabs/polymer-cookie#master"
+  }
+}

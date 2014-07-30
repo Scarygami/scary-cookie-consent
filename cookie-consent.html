@@ -1,0 +1,169 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-toolbar/core-toolbar.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../polymer-cookie/polymer-cookie.html">
+
+<!--
+Element to make it easier for you to display those annoying cookie message
+you need to have when hosting a website in the EU.
+
+You define your custom cookie message as content of the `cookie-consent` element.
+
+The message will contain a confirm and deny button. If you provide a `policy` link, an extra button will link to it.
+
+You can position/size the cookie message via CSS:
+
+```
+cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+```
+
+You can style the `core-toolbar` that is used internally via `::shadow`
+```
+cookie-consent::shadow core-toolbar {
+  color: white;
+  background-color: black;
+}
+```
+
+##### Example
+
+    <cookie-consent>This website uses cookies</cookie-consent>
+
+
+@element cookie-consent
+@blurb Element to make it easier for you to display those annoying cookie messages.
+@status alpha
+@homepage https://scarygami.github.io/cookie-consent
+-->
+<polymer-element name="cookie-consent" attributes="consent policy cookieName cookiePath cookieExpires">
+
+  <template>
+
+    <style>
+      core-toolbar {
+        font-size: 1em;
+      }
+
+      a {
+        color: inherit;
+      }
+    </style>
+
+    <polymer-cookie id="cookie" name="{{cookieName}}"></polymer-cookie>
+
+    <template if="{{!consent && !dismissed}}">
+      <core-toolbar>
+        <span flex id="info"><content></content></span>
+        <template if="{{policy}}">
+          <a href="{{policy}}"><paper-icon-button icon="info-outline"></paper-icon-button></a>
+        </template>
+        <paper-icon-button icon="check" on-click="{{giveConsent}}"></paper-icon-button>
+        <paper-icon-button icon="close" on-click="{{dismiss}}"></paper-icon-button>
+      </core-toolbar>
+    </template>
+  </template>
+
+  <script>
+
+    Polymer('cookie-consent', {
+      /**
+       * Will be true if a users accepts the cookie policy,
+       * or has previously accepted it.
+       *
+       * @attribute consent
+       * @type boolean
+       */
+
+      /**
+       * Link to your cookie policy
+       *
+       * @attribute policy
+       * @type string
+       */
+
+      /**
+       * The name of the cookie where given consent is remembered.
+       *
+       * @attribute cookieName
+       * @type string
+       * @default 'cookie_consent'
+       */
+      cookieName: 'cookie_consent',
+
+      /**
+       * The scope of the consent cookie.
+       * By default consent is remembered for the whole domain.
+       *
+       * @attribute cookiePath
+       * @type string
+       * @default '/'
+       */
+      cookiePath: '/',
+
+      /**
+       * The expiry date of the consent cookie.
+       * Has to be a valid RFC 1123 date string.
+       * By default the cookie lasts "forever" until revoked
+       *
+       * @attribute cookieExpires
+       * @type string
+       */
+
+      /**
+       * Fired when consent is given or has been given previously
+       *
+       * @event cookie-consent-given
+       */
+
+      /**
+       * Fired when consent has been revoked
+       *
+       * @event cookie-consent-revoked
+       */
+
+      /**
+       * Deletes the consent cookie.
+       *
+       * @method revoke
+       */
+      revoke: function () {
+        this.$.cookie.deleteCookie();
+        this.consent = false;
+        this.fire('cookie-consent-revoked');
+      },
+
+      dismiss: function () {
+        this.dismissed = true;
+      },
+
+      giveConsent: function () {
+        this.$.cookie.value = "1";
+        this.$.cookie.path = this.cookiePath || this.$.cookie.path;
+        this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
+        this.consent = true;
+        this.dismissed = true;
+        this.fire('cookie-consent-given');
+      },
+
+      attached: function () {
+        if (this.$.cookie.value) {
+          this.$.cookie.path = this.cookiePath || this.$.cookie.path;
+          this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
+          this.consent = true;
+          this.fire('cookie-consent-given');
+          this.dismissed = true;
+        } else {
+          this.consent = false;
+        }
+      }
+    });
+
+  </script>
+
+</polymer-element>
