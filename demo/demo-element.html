@@ -1,0 +1,68 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../cookie-consent.html">
+
+<dom-module id="demo-element">
+
+  <style>
+    cookie-consent {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    cookie-consent::shadow paper-toolbar {
+      color: white;
+      background-color: black;
+    }
+  </style>
+
+  <template>
+
+    <div hidden$="[[!consent]]">
+      <p>Any content that relies on cookies (like social media plugins) can be added in here.</p><br>
+
+      <button on-click="revokeConsent">Revoke consent</button>
+    </div>
+
+    <p>General content that will be visible to everyone no matter if consent has been given or not.</p><br>
+
+    <div hidden$="[[consent]]">
+      <p>Special content that will only be shown to people who haven't given consent (yet).</p><br>
+    </div>
+
+    <br><br>
+    <a href="demo_policy.html">Cookie policy</a>
+
+    <cookie-consent
+      id="cookie"
+      cookiePath="/"
+      consent="{{consent}}"
+      policy="demo_policy.html"
+      on-cookie-consent-given="onConsentGiven"
+      on-cookie-consent-revoked="onConsentRevoked">
+        This website uses cookies to improve your user experience and we need your consent to store those cookies on your computer.
+    </cookie-consent>
+
+  </template>
+  
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'demo-element',
+    
+    properties: {
+      consent: Boolean
+    },
+
+    onConsentGiven: function () {
+      console.log("Consent given! Any scripts that depend on cookies can be run now.");
+    },
+    revokeConsent: function () {
+      this.$.cookie.revoke();
+    },
+    onConsentRevoked: function () {
+      console.log("Consent revoked! All cookies we created have to be deleted now.");
+    }
+  });
+</script>

@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../core-toolbar/core-toolbar.html">
-<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../polymer-cookie/polymer-cookie.html">
 
@@ -23,9 +23,9 @@ cookie-consent {
 }
 ```
 
-You can style the `core-toolbar` that is used internally via `::shadow`
+You can style the `paper-toolbar` that is used internally via `::shadow`
 ```
-cookie-consent::shadow core-toolbar {
+cookie-consent::shadow paper-toolbar {
   color: white;
   background-color: black;
 }
@@ -41,37 +41,33 @@ cookie-consent::shadow core-toolbar {
 @status alpha
 @homepage https://scarygami.github.io/cookie-consent
 -->
-<polymer-element name="cookie-consent" attributes="consent policy cookieName cookiePath cookieExpires">
+<dom-module id="cookie-consent">
+  <style>
+    paper-toolbar {
+      font-size: 1em;
+    }
 
+    a {
+      color: inherit;
+    }
+  </style>
+  
   <template>
-
-    <style>
-      core-toolbar {
-        font-size: 1em;
-      }
-
-      a {
-        color: inherit;
-      }
-    </style>
-
     <polymer-cookie id="cookie" name="{{cookieName}}"></polymer-cookie>
 
-    <template if="{{!consent && !dismissed}}">
-      <core-toolbar>
-        <span flex id="info"><content></content></span>
-        <template if="{{policy}}">
-          <a href="{{policy}}"><paper-icon-button icon="info-outline"></paper-icon-button></a>
-        </template>
-        <paper-icon-button icon="check" on-click="{{giveConsent}}"></paper-icon-button>
-        <paper-icon-button icon="close" on-click="{{dismiss}}"></paper-icon-button>
-      </core-toolbar>
-    </template>
+    <paper-toolbar hidden$="[[_isToolbarHidden(consent, dismissed)]]">
+      <span id="info" class="flex"><content></content></span>
+      <a href="{{policy}}" hidden$="[[!_hasPolicy(policy)]]"><paper-icon-button icon="info-outline"></paper-icon-button></a>
+      <paper-icon-button icon="check" on-click="giveConsent"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="dismiss"></paper-icon-button>
+    </paper-toolbar>
   </template>
+</dom-module>
 
-  <script>
-
-    Polymer('cookie-consent', {
+<script>
+  Polymer({
+    is: 'cookie-consent',
+    properties: {
       /**
        * Will be true if a user accepts the cookie policy,
        * or has previously accepted it.
@@ -79,13 +75,21 @@ cookie-consent::shadow core-toolbar {
        * @attribute consent
        * @type boolean
        */
-
+      consent: {
+        type: Boolean,
+        notify: true
+      },
+      
       /**
        * Link to your cookie policy
        *
        * @attribute policy
        * @type string
        */
+      policy: {
+        type: String,
+        value: ''
+      },
 
       /**
        * The name of the cookie where given consent is remembered.
@@ -94,7 +98,11 @@ cookie-consent::shadow core-toolbar {
        * @type string
        * @default 'cookie_consent'
        */
-      cookieName: 'cookie_consent',
+      cookieName: {
+        type: String,
+        value: 'cookie_consent'
+      },
+
 
       /**
        * The scope of the consent cookie.
@@ -104,8 +112,11 @@ cookie-consent::shadow core-toolbar {
        * @type string
        * @default '/'
        */
-      cookiePath: '/',
-
+      cookiePath: {
+        type: String,
+        default: '/'
+      },
+      
       /**
        * The expiry date of the consent cookie.
        * Has to be a valid RFC 1123 date string.
@@ -114,56 +125,65 @@ cookie-consent::shadow core-toolbar {
        * @attribute cookieExpires
        * @type string
        */
+      cookieExpires: String
+    },
 
-      /**
-       * Fired when consent is given or has been given previously
-       *
-       * @event cookie-consent-given
-       */
+    /**
+     * Fired when consent is given or has been given previously
+     *
+     * @event cookie-consent-given
+     */
 
-      /**
-       * Fired when consent has been revoked
-       *
-       * @event cookie-consent-revoked
-       */
+    /**
+     * Fired when consent has been revoked
+     *
+     * @event cookie-consent-revoked
+     */
 
-      /**
-       * Deletes the consent cookie.
-       *
-       * @method revoke
-       */
-      revoke: function () {
-        this.$.cookie.deleteCookie();
-        this.consent = false;
-        this.fire('cookie-consent-revoked');
-      },
+    /**
+     * Deletes the consent cookie.
+     *
+     * @method revoke
+     */
+     
+    _isToolbarHidden: function (consent, dismissed) {
+      return consent || dismissed;
+    },
+    
+    _hasPolicy: function (policy) {
+      return !!policy;
+    },
+     
+    revoke: function () {
+      this.$.cookie.deleteCookie();
+      this.consent = false;
+      this.fire('cookie-consent-revoked');
+    },
 
-      dismiss: function () {
-        this.dismissed = true;
-      },
+    dismiss: function () {
+      this.dismissed = true;
+    },
 
-      giveConsent: function () {
-        this.$.cookie.value = "1";
+    giveConsent: function () {
+      this.$.cookie.value = "1";
+      this.$.cookie.path = this.cookiePath || this.$.cookie.path;
+      this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
+      this.consent = true;
+      this.dismissed = true;
+      this.fire('cookie-consent-given');
+    },
+
+    attached: function () {
+      if (this.$.cookie.value) {
         this.$.cookie.path = this.cookiePath || this.$.cookie.path;
         this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
         this.consent = true;
-        this.dismissed = true;
         this.fire('cookie-consent-given');
-      },
-
-      attached: function () {
-        if (this.$.cookie.value) {
-          this.$.cookie.path = this.cookiePath || this.$.cookie.path;
-          this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
-          this.consent = true;
-          this.fire('cookie-consent-given');
-          this.dismissed = true;
-        } else {
-          this.consent = false;
-        }
+        this.dismissed = true;
+      } else {
+        this.consent = false;
       }
-    });
+    }
+  });
 
-  </script>
-
-</polymer-element>
+</script>
