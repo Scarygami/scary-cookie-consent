@@ -9,10 +9,10 @@
       bottom: 0;
       left: 0;
       right: 0;
-    }
-    cookie-consent::shadow paper-toolbar {
-      color: white;
-      background-color: black;
+      --cookie-consent-toolbar: {
+        color: white;
+        background: black;
+      };
     }
   </style>
 
@@ -38,31 +38,33 @@
       cookiePath="/"
       consent="{{consent}}"
       policy="demo_policy.html"
-      on-cookie-consent-given="onConsentGiven"
-      on-cookie-consent-revoked="onConsentRevoked">
+      on-consent-given="onConsentGiven"
+      on-consent-revoked="onConsentRevoked">
         This website uses cookies to improve your user experience and we need your consent to store those cookies on your computer.
     </cookie-consent>
 
   </template>
-  
+
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'demo-element',
-    
-    properties: {
-      consent: Boolean
-    },
+  (function (global) {
+    global.Polymer({
+      is: 'demo-element',
 
-    onConsentGiven: function () {
-      console.log("Consent given! Any scripts that depend on cookies can be run now.");
-    },
-    revokeConsent: function () {
-      this.$.cookie.revoke();
-    },
-    onConsentRevoked: function () {
-      console.log("Consent revoked! All cookies we created have to be deleted now.");
-    }
-  });
+      properties: {
+        consent: Boolean
+      },
+
+      onConsentGiven: function () {
+        global.console.log("Consent given! Any scripts that depend on cookies can be run now.");
+      },
+      revokeConsent: function () {
+        this.$.cookie.revoke();
+      },
+      onConsentRevoked: function () {
+        global.console.log("Consent revoked! All cookies we created have to be deleted now.");
+      }
+    });
+  }(this));
 </script>

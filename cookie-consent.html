@@ -23,11 +23,24 @@ cookie-consent {
 }
 ```
 
-You can style the `paper-toolbar` that is used internally via `::shadow`
+You can style the look of the `cookie-consent` toolbar using the
+`--cookie-consent-toolbar` CSS mixin or the `--cookie-consent-background`
+and `--cookie-consent-color` custom properties
+
 ```
-cookie-consent::shadow paper-toolbar {
-  color: white;
-  background-color: black;
+cookie-consent {
+  --cookie-consent-toolbar {
+    color: white;
+    background-color: black;
+  };
+}
+```
+
+```
+cookie-consent {
+    --cookie-consent-color: white;
+    --cookie-consent-background: black;
+  };
 }
 ```
 
@@ -45,145 +58,151 @@ cookie-consent::shadow paper-toolbar {
   <style>
     paper-toolbar {
       font-size: 1em;
+      background: var(--cookie-consent-background);
+      color: var(--cookie-consent-color);
+      @apply(--cookie-consent-toolbar)
     }
 
     a {
       color: inherit;
     }
   </style>
-  
+
   <template>
     <polymer-cookie id="cookie" name="{{cookieName}}"></polymer-cookie>
 
     <paper-toolbar hidden$="[[_isToolbarHidden(consent, dismissed)]]">
       <span id="info" class="flex"><content></content></span>
       <a href="{{policy}}" hidden$="[[!_hasPolicy(policy)]]"><paper-icon-button icon="info-outline"></paper-icon-button></a>
-      <paper-icon-button icon="check" on-click="giveConsent"></paper-icon-button>
-      <paper-icon-button icon="close" on-click="dismiss"></paper-icon-button>
+      <paper-icon-button icon="check" on-click="_giveConsent"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="_dismiss"></paper-icon-button>
     </paper-toolbar>
   </template>
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'cookie-consent',
-    properties: {
+  (function (global) {
+    var Polymer = global.Polymer;
+
+    Polymer({
+      is: 'cookie-consent',
+
       /**
-       * Will be true if a user accepts the cookie policy,
-       * or has previously accepted it.
+       * Fired when consent is given or has been given previously
        *
-       * @attribute consent
-       * @type boolean
+       * @event consent-given
        */
-      consent: {
-        type: Boolean,
-        notify: true
+
+      /**
+       * Fired when consent has been revoked
+       *
+       * @event consent-revoked
+       */
+
+      properties: {
+        /**
+         * Will be true if a user accepts the cookie policy,
+         * or has previously accepted it.
+         *
+         * @attribute consent
+         * @type boolean
+         */
+        consent: {
+          type: Boolean,
+          notify: true
+        },
+
+        /**
+         * Link to your cookie policy
+         *
+         * @attribute policy
+         * @type string
+         */
+        policy: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * The name of the cookie where given consent is remembered.
+         *
+         * @attribute cookieName
+         * @type string
+         * @default 'cookie_consent'
+         */
+        cookieName: {
+          type: String,
+          value: 'cookie_consent'
+        },
+
+        /**
+         * The scope of the consent cookie.
+         * By default consent is remembered for the whole domain.
+         *
+         * @attribute cookiePath
+         * @type string
+         * @default '/'
+         */
+        cookiePath: {
+          type: String,
+          default: '/'
+        },
+
+        /**
+         * The expiry date of the consent cookie.
+         * Has to be a valid RFC 1123 date string.
+         * By default the cookie lasts "forever" until revoked
+         *
+         * @attribute cookieExpires
+         * @type string
+         */
+        cookieExpires: String
       },
-      
-      /**
-       * Link to your cookie policy
-       *
-       * @attribute policy
-       * @type string
-       */
-      policy: {
-        type: String,
-        value: ''
+
+      _isToolbarHidden: function (consent, dismissed) {
+        return consent || dismissed;
+      },
+
+      _hasPolicy: function (policy) {
+        return !!policy;
       },
 
       /**
-       * The name of the cookie where given consent is remembered.
+       * Deletes the consent cookie.
        *
-       * @attribute cookieName
-       * @type string
-       * @default 'cookie_consent'
+       * @method revoke
        */
-      cookieName: {
-        type: String,
-        value: 'cookie_consent'
+      revoke: function () {
+        this.$.cookie.deleteCookie();
+        this.consent = false;
+        this.fire('consent-revoked');
       },
 
-
-      /**
-       * The scope of the consent cookie.
-       * By default consent is remembered for the whole domain.
-       *
-       * @attribute cookiePath
-       * @type string
-       * @default '/'
-       */
-      cookiePath: {
-        type: String,
-        default: '/'
+      _dismiss: function () {
+        this.dismissed = true;
       },
-      
-      /**
-       * The expiry date of the consent cookie.
-       * Has to be a valid RFC 1123 date string.
-       * By default the cookie lasts "forever" until revoked
-       *
-       * @attribute cookieExpires
-       * @type string
-       */
-      cookieExpires: String
-    },
 
-    /**
-     * Fired when consent is given or has been given previously
-     *
-     * @event cookie-consent-given
-     */
-
-    /**
-     * Fired when consent has been revoked
-     *
-     * @event cookie-consent-revoked
-     */
-
-    /**
-     * Deletes the consent cookie.
-     *
-     * @method revoke
-     */
-     
-    _isToolbarHidden: function (consent, dismissed) {
-      return consent || dismissed;
-    },
-    
-    _hasPolicy: function (policy) {
-      return !!policy;
-    },
-     
-    revoke: function () {
-      this.$.cookie.deleteCookie();
-      this.consent = false;
-      this.fire('cookie-consent-revoked');
-    },
-
-    dismiss: function () {
-      this.dismissed = true;
-    },
-
-    giveConsent: function () {
-      this.$.cookie.value = "1";
-      this.$.cookie.path = this.cookiePath || this.$.cookie.path;
-      this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
-      this.consent = true;
-      this.dismissed = true;
-      this.fire('cookie-consent-given');
-    },
-
-    attached: function () {
-      if (this.$.cookie.value) {
+      _giveConsent: function () {
+        this.$.cookie.value = "1";
         this.$.cookie.path = this.cookiePath || this.$.cookie.path;
         this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
         this.consent = true;
-        this.fire('cookie-consent-given');
         this.dismissed = true;
-      } else {
-        this.consent = false;
+        this.fire('consent-given');
+      },
+
+      attached: function () {
+        if (this.$.cookie.value) {
+          this.$.cookie.path = this.cookiePath || this.$.cookie.path;
+          this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
+          this.consent = true;
+          this.fire('consent-given');
+          this.dismissed = true;
+        } else {
+          this.consent = false;
+        }
       }
-    }
-  });
+    });
+  }(this));
 
 </script>
