@@ -2,21 +2,19 @@
 <link rel="import" href="../cookie-consent.html">
 
 <dom-module id="demo-element">
-
-  <style>
-    cookie-consent {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      --cookie-consent-toolbar: {
-        color: white;
-        background: black;
-      };
-    }
-  </style>
-
   <template>
+    <style>
+      cookie-consent {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        --cookie-consent-toolbar: {
+          color: white;
+          background: black;
+        };
+      }
+    </style>
 
     <div hidden$="[[!consent]]">
       <p>Any content that relies on cookies (like social media plugins) can be added in here.</p><br>
@@ -48,23 +46,21 @@
 </dom-module>
 
 <script>
-  (function (global) {
-    global.Polymer({
-      is: 'demo-element',
+  Polymer({
+    is: 'demo-element',
 
-      properties: {
-        consent: Boolean
-      },
+    properties: {
+      consent: Boolean
+    },
 
-      onConsentGiven: function () {
-        global.console.log("Consent given! Any scripts that depend on cookies can be run now.");
-      },
-      revokeConsent: function () {
-        this.$.cookie.revoke();
-      },
-      onConsentRevoked: function () {
-        global.console.log("Consent revoked! All cookies we created have to be deleted now.");
-      }
-    });
-  }(this));
+    onConsentGiven: function () {
+      console.log('Consent given! Any scripts that depend on cookies can be run now.');
+    },
+    revokeConsent: function () {
+      this.$.cookie.revoke();
+    },
+    onConsentRevoked: function () {
+      console.log('Consent revoked! All cookies we created have to be deleted now.');
+    }
+  });
 </script>
