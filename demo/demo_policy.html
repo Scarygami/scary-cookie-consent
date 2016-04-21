@@ -2,13 +2,13 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>cookie-consent Demo</title>
+  <title>scary-cookie-consent Demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-  <link rel="import" href="../cookie-consent.html">
+  <link rel="import" href="../scary-cookie-consent.html">
 
   <style>
-    cookie-consent { display: none; }
+    scary-cookie-consent { display: none; }
   </style>
 
 </head>
@@ -23,14 +23,12 @@
   <p>Also offer a way to revoke consent</p>
   <button id="revoke">Revoke consent</button>
 
-  <cookie-consent id="cookie"></cookie-consent>
+  <scary-cookie-consent id="cookie"></scary-cookie-consent>
 
   <script>
-    (function (global) {
-      global.document.getElementById("revoke").onclick = function () {
-        global.document.getElementById("cookie").revoke();
-      };
-    }(this));
+    document.getElementById('revoke').onclick = function () {
+      document.getElementById('cookie').revoke();
+    };
   </script>
 
 </body>

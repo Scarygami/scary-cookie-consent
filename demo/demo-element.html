@@ -1,10 +1,10 @@
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../cookie-consent.html">
+<link rel="import" href="../scary-cookie-consent.html">
 
 <dom-module id="demo-element">
   <template>
     <style>
-      cookie-consent {
+      scary-cookie-consent {
         position: fixed;
         bottom: 0;
         left: 0;
@@ -31,7 +31,7 @@
     <br><br>
     <a href="demo_policy.html">Cookie policy</a>
 
-    <cookie-consent
+    <scary-cookie-consent
       id="cookie"
       cookiePath="/"
       consent="{{consent}}"
@@ -39,7 +39,7 @@
       on-consent-given="onConsentGiven"
       on-consent-revoked="onConsentRevoked">
         This website uses cookies to improve your user experience and we need your consent to store those cookies on your computer.
-    </cookie-consent>
+    </scary-cookie-consent>
 
   </template>
 
