@@ -1,4 +1,7 @@
-cookie-consent
-================
+# scary-cookie-consent
 
-See the [component page](http://scarygami.github.io/cookie-consent) for more information.
+[![Build Status](https://travis-ci.org/Scarygami/scary-cookie-consent.svg?branch=master)](https://travis-ci.org/Scarygami/scary-cookie-consent)
+
+Element to make it easier for you to display those annoying cookie messages.
+
+[Documentation](https://scarygami.github.io/scary-cookie-consent/)
