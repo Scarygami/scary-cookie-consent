@@ -59,12 +59,12 @@
             window.setTimeout(function () {
               elem = fixture('test');
               done();
-            }, 1);
+            }, 100);
           });
 
           teardown(function(done) {
             deleteCookie('cookie_consent', '/');
-            window.setTimeout(done, 1);
+            window.setTimeout(done, 100);
           });
 
           test('consent bar is visible', function () {
@@ -72,36 +72,40 @@
             expect(style.display).to.not.be.equal('none');
           });
 
-          test('giving consent sets cookie', function () {
+          test('giving consent sets cookie', function (done) {
             elem._giveConsent();
             window.setTimeout(function () {
               var cookie = getCookie('cookie_consent');
               expect(cookie).to.be.ok;
-            }, 10);
+              done();
+            }, 100);
           });
 
-          test('giving content hides bar', function () {
+          test('giving consent hides bar', function (done) {
             elem._giveConsent();
             window.setTimeout(function () {
               var style = window.getComputedStyle(elem.$.container);
               expect(style.display).to.be.equal('none');
-            }, 10);
+              done();
+            }, 100);
           });
 
-          test('dismissing hides bar', function () {
+          test('dismissing hides bar', function (done) {
             elem._dismiss();
             window.setTimeout(function () {
               var style = window.getComputedStyle(elem.$.container);
               expect(style.display).to.be.equal('none');
-            }, 10);
+              done();
+            }, 100);
           });
 
-          test('dismissing doesn\'t set cookie', function () {
+          test('dismissing doesn\'t set cookie', function (done) {
             elem._dismiss();
             window.setTimeout(function () {
               var cookie = getCookie('cookie_consent');
               expect(cookie).to.not.be.ok;
-            }, 10);
+              done();
+            }, 100);
           });
         });
 
@@ -111,12 +115,12 @@
             window.setTimeout(function () {
               elem = fixture('test');
               done();
-            }, 1);
+            }, 100);
           });
 
           teardown(function (done) {
             deleteCookie('cookie_consent', '/');
-            window.setTimeout(done, 1);
+            window.setTimeout(done, 100);
           });
 
           test('consent bar is not visible', function () {
@@ -124,12 +128,13 @@
             expect(style.display).to.be.equal('none');
           });
 
-          test('revoking consent delete the cookie', function () {
+          test('revoking consent delete the cookie', function (done) {
             elem.revoke();
             window.setTimeout(function () {
               var cookie = getCookie('cookie_consent');
               expect(cookie).to.not.be.ok;
-            }, 10);
+              done();
+            }, 100);
           });
         });
       });
