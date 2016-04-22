@@ -1,0 +1,241 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../scary-cookie/scary-cookie.html">
+
+<!--
+Element to make it easier for you to display those annoying cookie message
+you need to have when hosting a website in the EU.
+
+You define your custom cookie message as content of the `cookie-consent` element.
+
+The message will contain a confirm and deny button. If you provide a `policy` link, an extra button will link to it.
+
+You can position/size the cookie message via CSS:
+
+```
+scary-cookie-consent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+```
+
+You can style the look of the `cookie-consent` toolbar using the
+`--cookie-consent-toolbar` CSS mixin or the `--cookie-consent-background`
+and `--cookie-consent-color` custom properties
+
+```
+scary-cookie-consent {
+  --cookie-consent-toolbar {
+    color: white;
+    background-color: black;
+  };
+}
+```
+
+```
+scary-cookie-consent {
+  --cookie-consent-color: white;
+  --cookie-consent-background: black;
+}
+```
+
+##### Example
+
+    <scary-cookie-consent>This website uses cookies</scary-cookie-consent>
+
+
+@element scary-cookie-consent
+@blurb Element to make it easier for you to display those annoying cookie messages.
+@status alpha
+@homepage https://scarygami.github.io/scary-cookie-consent
+@demo demo/index.html
+-->
+<dom-module id="scary-cookie-consent">
+  <template>
+    <style>
+      #container {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+
+        padding: 18px;
+        font-size: 1em;
+        background: var(--cookie-consent-background);
+        color: var(--cookie-consent-color);
+        @apply(--cookie-consent-toolbar)
+      }
+
+      #container[hidden] {
+        display: none;
+      }
+
+      #info {
+        @apply(--layout-flex);
+      }
+
+      a {
+        color: inherit;
+      }
+    </style>
+
+    <scary-cookie id="cookie"
+                  name="{{cookieName}}"
+                  expires="[[cookieExpires]]"
+                  path="[[cookiePath]]"
+                  domain="[[cookieDomain]]"
+                  secure="[[cookieSecure]]"></scary-cookie>
+
+    <div id="container" hidden$="[[_isToolbarHidden(consent, dismissed)]]">
+      <span id="info" class="flex"><content></content></span>
+      <template is="dom-if" if="[[_hasPolicy(policy)]]">
+        <a href="{{policy}}"><paper-icon-button icon="info-outline"></paper-icon-button></a>
+      </template>
+      <paper-icon-button icon="check" on-click="_giveConsent"></paper-icon-button>
+      <paper-icon-button icon="close" on-click="_dismiss"></paper-icon-button>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'scary-cookie-consent',
+
+      properties: {
+        /**
+         * Will be true if a user accepts the cookie policy,
+         * or has previously accepted it.
+         *
+         * @attribute consent
+         * @type boolean
+         */
+        consent: {
+          type: Boolean,
+          notify: true
+        },
+
+        /**
+         * Link to your cookie policy
+         *
+         * @attribute policy
+         * @type string
+         */
+        policy: String,
+
+        /**
+         * The name of the cookie where given consent is remembered.
+         *
+         * @attribute cookieName
+         * @type string
+         * @default 'cookie_consent'
+         */
+        cookieName: {
+          type: String,
+          value: 'cookie_consent'
+        },
+
+        /**
+         * The scope of the consent cookie.
+         * By default consent is remembered for the whole domain.
+         *
+         * @attribute cookiePath
+         * @type string
+         * @default '/'
+         */
+        cookiePath: {
+          type: String,
+          value: '/'
+        },
+
+        /**
+         * The expiry date of the consent cookie.
+         * Has to be a valid RFC 1123 date string.
+         * By default the cookie lasts "forever" until revoked
+         *
+         * @attribute cookieExpires
+         * @type string
+         */
+        cookieExpires: {
+          type: String,
+          value: 'Fri, 31 Dec 9999 23:59:59 GMT'
+        },
+
+        /**
+         * If true, cookie will only be transmitted over secure protocol as https
+         *
+         * @attribute cookieSecure
+         * @type boolean
+         * @default false
+         */
+        cookieSecure: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * The domain from where the cookie will be readable.
+         * E.g., "example.com", ".example.com" (includes all subdomains)
+         * or "subdomain.example.com"; if not specified, defaults to the
+         * host portion of the current document location
+         *
+         * @attribute cookieDomain
+         * @type string
+         */
+        cookieDomain: String,
+      },
+
+      _isToolbarHidden: function (consent, dismissed) {
+        return consent || dismissed;
+      },
+
+      _hasPolicy: function (policy) {
+        return !!policy;
+      },
+
+      /**
+       * Fired when consent has been revoked
+       *
+       * @event consent-revoked
+       */
+
+      /**
+       * Deletes the consent cookie.
+       *
+       * @method revoke
+       */
+      revoke: function () {
+        this.$.cookie.deleteCookie();
+        this.consent = false;
+        this.fire('consent-revoked');
+      },
+
+      _dismiss: function () {
+        this.dismissed = true;
+      },
+
+      /**
+       * Fired when consent is given or has been given previously
+       *
+       * @event consent-given
+       */
+
+      _giveConsent: function () {
+        this.$.cookie.value = '1';
+        this.consent = true;
+        this.dismissed = true;
+        this.fire('consent-given');
+      },
+
+      attached: function () {
+        if (this.$.cookie.value) {
+          this.consent = true;
+          this.fire('consent-given');
+          this.dismissed = true;
+        } else {
+          this.consent = false;
+        }
+      }
+    });
+  </script>
+</dom-module>

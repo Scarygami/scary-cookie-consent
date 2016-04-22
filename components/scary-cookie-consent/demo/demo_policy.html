@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>scary-cookie-consent Demo</title>
+
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="../scary-cookie-consent.html">
+
+  <style>
+    scary-cookie-consent { display: none; }
+  </style>
+
+</head>
+<body unresolved>
+
+  <a href="../demo/">Main demo page</a><br><br>
+
+  <h1>Cookie Policy</h1>
+
+  <p>Some content about what cookies you use and why...</p><br>
+
+  <p>Also offer a way to revoke consent</p>
+  <button id="revoke">Revoke consent</button>
+
+  <scary-cookie-consent id="cookie"></scary-cookie-consent>
+
+  <script>
+    document.getElementById('revoke').onclick = function () {
+      document.getElementById('cookie').revoke();
+    };
+  </script>
+
+</body>
+</html>

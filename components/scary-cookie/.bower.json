@@ -1,0 +1,40 @@
+{
+  "name": "scary-cookie",
+  "version": "1.0.1",
+  "authors": [
+    "Gerwin Sturm <scarygami@gmail.com>"
+  ],
+  "description": "Polymer element to read and write cookies",
+  "main": "scary-cookie.html",
+  "keywords": [
+    "Polymer",
+    "cookie",
+    "web-components",
+    "web-component"
+  ],
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/Scarygami/scary-cookie",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^4.0.0"
+  },
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.1",
+    "commit": "62a6f75f1145f9ebbea6da15ed68e1dd07674798"
+  },
+  "_source": "git://github.com/Scarygami/scary-cookie.git",
+  "_target": "^1.0.0",
+  "_originalSource": "Scarygami/scary-cookie"
+}
