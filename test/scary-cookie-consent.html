@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>scary-cookie-consent</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../promise-polyfill/promise-polyfill.html">
+    <link rel="import" href="../scary-cookie-consent.html">
+  </head>
+  <body>
+    <test-fixture id="test">
+      <template>
+        <scary-cookie-consent>Give me cookies!</scary-cookie-consent>
+      </template>
+    </test-fixture>
+
+    <script>
+      'use strict';
+
+      function createCookie(name, value, days, path) {
+        var params = '';
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime()+(days*24*60*60*1000));
+          params = params + ';expires='+date.toUTCString();
+        }
+        if (path) {
+          params = params + ';path=' + path
+        }
+        document.cookie = name + '=' + value + params;
+      }
+
+      function deleteCookie(name, path) {
+        createCookie(name, '', -100, path);
+      }
+
+      function getCookie (name) {
+        var pairs = document.cookie.split(/\s*;\s*/);
+        var map = pairs.map(function (kv) {
+          var eq = kv.indexOf('=');
+          return {
+            name: unescape(kv.slice(0, eq)),
+            value: unescape(kv.slice(eq + 1))
+          };
+        });
+        return map.filter(
+          function (kv) { return kv.name === name; }
+        )[0];
+      }
+
+      suite('<scary-cookie-consent>', function () {
+        var elem;
+
+        suite('fresh consent', function () {
+          setup(function (done) {
+            deleteCookie('cookie_consent', '/');
+            window.setTimeout(function () {
+              elem = fixture('test');
+              done();
+            }, 1);
+          });
+
+          teardown(function(done) {
+            deleteCookie('cookie_consent', '/');
+            window.setTimeout(done, 1);
+          });
+
+          test('consent bar is visible', function () {
+            var style = window.getComputedStyle(elem.$.container);
+            expect(style.display).to.not.be.equal('none');
+          });
+
+          test('giving consent sets cookie', function () {
+            elem._giveConsent();
+            window.setTimeout(function () {
+              var cookie = getCookie('cookie_consent');
+              expect(cookie).to.be.ok;
+            }, 10);
+          });
+
+          test('giving content hides bar', function () {
+            elem._giveConsent();
+            window.setTimeout(function () {
+              var style = window.getComputedStyle(elem.$.container);
+              expect(style.display).to.be.equal('none');
+            }, 10);
+          });
+
+          test('dismissing hides bar', function () {
+            elem._dismiss();
+            window.setTimeout(function () {
+              var style = window.getComputedStyle(elem.$.container);
+              expect(style.display).to.be.equal('none');
+            }, 10);
+          });
+
+          test('dismissing doesn\'t set cookie', function () {
+            elem._dismiss();
+            window.setTimeout(function () {
+              var cookie = getCookie('cookie_consent');
+              expect(cookie).to.not.be.ok;
+            }, 10);
+          });
+        });
+
+        suite('existing consent', function () {
+          setup(function (done) {
+            createCookie('cookie_consent', '1', 1, '/');
+            window.setTimeout(function () {
+              elem = fixture('test');
+              done();
+            }, 1);
+          });
+
+          teardown(function (done) {
+            deleteCookie('cookie_consent', '/');
+            window.setTimeout(done, 1);
+          });
+
+          test('consent bar is not visible', function () {
+            var style = window.getComputedStyle(elem.$.container);
+            expect(style.display).to.be.equal('none');
+          });
+
+          test('revoking consent delete the cookie', function () {
+            elem.revoke();
+            window.setTimeout(function () {
+              var cookie = getCookie('cookie_consent');
+              expect(cookie).to.not.be.ok;
+            }, 10);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

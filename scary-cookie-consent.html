@@ -81,7 +81,12 @@ scary-cookie-consent {
       }
     </style>
 
-    <scary-cookie id="cookie" name="{{cookieName}}"></scary-cookie>
+    <scary-cookie id="cookie"
+                  name="{{cookieName}}"
+                  expires="[[cookieExpires]]"
+                  path="[[cookiePath]]"
+                  domain="[[cookieDomain]]"
+                  secure="[[cookieSecure]]"></scary-cookie>
 
     <div id="container" hidden$="[[_isToolbarHidden(consent, dismissed)]]">
       <span id="info" class="flex"><content></content></span>
@@ -92,124 +97,145 @@ scary-cookie-consent {
       <paper-icon-button icon="close" on-click="_dismiss"></paper-icon-button>
     </div>
   </template>
-</dom-module>
 
-<script>
-  Polymer({
-    is: 'scary-cookie-consent',
+  <script>
+    Polymer({
+      is: 'scary-cookie-consent',
 
-    /**
-     * Fired when consent is given or has been given previously
-     *
-     * @event consent-given
-     */
+      properties: {
+        /**
+         * Will be true if a user accepts the cookie policy,
+         * or has previously accepted it.
+         *
+         * @attribute consent
+         * @type boolean
+         */
+        consent: {
+          type: Boolean,
+          notify: true
+        },
 
-    /**
-     * Fired when consent has been revoked
-     *
-     * @event consent-revoked
-     */
+        /**
+         * Link to your cookie policy
+         *
+         * @attribute policy
+         * @type string
+         */
+        policy: String,
 
-    properties: {
-      /**
-       * Will be true if a user accepts the cookie policy,
-       * or has previously accepted it.
-       *
-       * @attribute consent
-       * @type boolean
-       */
-      consent: {
-        type: Boolean,
-        notify: true
+        /**
+         * The name of the cookie where given consent is remembered.
+         *
+         * @attribute cookieName
+         * @type string
+         * @default 'cookie_consent'
+         */
+        cookieName: {
+          type: String,
+          value: 'cookie_consent'
+        },
+
+        /**
+         * The scope of the consent cookie.
+         * By default consent is remembered for the whole domain.
+         *
+         * @attribute cookiePath
+         * @type string
+         * @default '/'
+         */
+        cookiePath: {
+          type: String,
+          value: '/'
+        },
+
+        /**
+         * The expiry date of the consent cookie.
+         * Has to be a valid RFC 1123 date string.
+         * By default the cookie lasts "forever" until revoked
+         *
+         * @attribute cookieExpires
+         * @type string
+         */
+        cookieExpires: {
+          type: String,
+          value: 'Fri, 31 Dec 9999 23:59:59 GMT'
+        },
+
+        /**
+         * If true, cookie will only be transmitted over secure protocol as https
+         *
+         * @attribute cookieSecure
+         * @type boolean
+         * @default false
+         */
+        cookieSecure: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * The domain from where the cookie will be readable.
+         * E.g., "example.com", ".example.com" (includes all subdomains)
+         * or "subdomain.example.com"; if not specified, defaults to the
+         * host portion of the current document location
+         *
+         * @attribute cookieDomain
+         * @type string
+         */
+        cookieDomain: String,
+      },
+
+      _isToolbarHidden: function (consent, dismissed) {
+        return consent || dismissed;
+      },
+
+      _hasPolicy: function (policy) {
+        return !!policy;
       },
 
       /**
-       * Link to your cookie policy
+       * Fired when consent has been revoked
        *
-       * @attribute policy
-       * @type string
+       * @event consent-revoked
        */
-      policy: String,
 
       /**
-       * The name of the cookie where given consent is remembered.
+       * Deletes the consent cookie.
        *
-       * @attribute cookieName
-       * @type string
-       * @default 'cookie_consent'
+       * @method revoke
        */
-      cookieName: {
-        type: String,
-        value: 'cookie_consent'
-      },
-
-      /**
-       * The scope of the consent cookie.
-       * By default consent is remembered for the whole domain.
-       *
-       * @attribute cookiePath
-       * @type string
-       * @default '/'
-       */
-      cookiePath: {
-        type: String,
-        default: '/'
-      },
-
-      /**
-       * The expiry date of the consent cookie.
-       * Has to be a valid RFC 1123 date string.
-       * By default the cookie lasts "forever" until revoked
-       *
-       * @attribute cookieExpires
-       * @type string
-       */
-      cookieExpires: String
-    },
-
-    _isToolbarHidden: function (consent, dismissed) {
-      return consent || dismissed;
-    },
-
-    _hasPolicy: function (policy) {
-      return !!policy;
-    },
-
-    /**
-     * Deletes the consent cookie.
-     *
-     * @method revoke
-     */
-    revoke: function () {
-      this.$.cookie.deleteCookie();
-      this.consent = false;
-      this.fire('consent-revoked');
-    },
-
-    _dismiss: function () {
-      this.dismissed = true;
-    },
-
-    _giveConsent: function () {
-      this.$.cookie.value = '1';
-      this.$.cookie.path = this.cookiePath || this.$.cookie.path;
-      this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
-      this.consent = true;
-      this.dismissed = true;
-      this.fire('consent-given');
-    },
-
-    attached: function () {
-      if (this.$.cookie.value) {
-        this.$.cookie.path = this.cookiePath || this.$.cookie.path;
-        this.$.cookie.expires = this.cookieExpires || this.$.cookie.expires;
-        this.consent = true;
-        this.fire('consent-given');
-        this.dismissed = true;
-      } else {
+      revoke: function () {
+        this.$.cookie.deleteCookie();
         this.consent = false;
-      }
-    }
-  });
+        this.fire('consent-revoked');
+      },
 
-</script>
+      _dismiss: function () {
+        this.dismissed = true;
+      },
+
+      /**
+       * Fired when consent is given or has been given previously
+       *
+       * @event consent-given
+       */
+
+      _giveConsent: function () {
+        this.$.cookie.value = '1';
+        this.consent = true;
+        this.dismissed = true;
+        this.fire('consent-given');
+      },
+
+      attached: function () {
+        if (this.$.cookie.value) {
+          this.consent = true;
+          this.fire('consent-given');
+          this.dismissed = true;
+        } else {
+          this.consent = false;
+        }
+      }
+    });
+  </script>
+</dom-module>
