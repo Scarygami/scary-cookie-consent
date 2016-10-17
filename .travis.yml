@@ -15,7 +15,7 @@ addons:
 before_script:
 - npm install -g bower polylint web-component-tester
 - bower install
-- polylint -i scary-cookie-consent.html
+- polylint -i scary-cookie-consent.html --no-recursion
 script:
 - xvfb-run wct
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce -s 'default';
