@@ -1,8 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../scary-cookie/scary-cookie.html">
+
+<link rel="import" href="scary-cookie-consent-icons.html">
 
 <!--
 Element to make it easier for you to display those annoying cookie message
@@ -89,10 +90,10 @@ scary-cookie-consent {
     <div id="container" hidden$="[[_isToolbarHidden(consent, dismissed)]]">
       <span id="info" class="flex"><content></content></span>
       <template is="dom-if" if="[[_hasPolicy(policy)]]">
-        <a href="{{policy}}"><paper-icon-button icon="info-outline"></paper-icon-button></a>
+        <a href="{{policy}}" tabindex="-1"><paper-icon-button icon="cookie:info"></paper-icon-button></a>
       </template>
-      <paper-icon-button icon="check" on-click="_giveConsent"></paper-icon-button>
-      <paper-icon-button icon="close" on-click="_dismiss"></paper-icon-button>
+      <paper-icon-button icon="cookie:check" on-click="_giveConsent"></paper-icon-button>
+      <paper-icon-button icon="cookie:close" on-click="_dismiss"></paper-icon-button>
     </div>
   </template>
 
