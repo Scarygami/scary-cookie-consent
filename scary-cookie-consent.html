@@ -56,14 +56,14 @@ scary-cookie-consent {
   <template>
     <style>
       #container {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
+        @apply --layout-horizontal;
+        @apply --layout-center;
 
         padding: 18px;
         font-size: 1em;
         background: var(--cookie-consent-background);
         color: var(--cookie-consent-color);
-        @apply(--cookie-consent-toolbar)
+        @apply --cookie-consent-toolbar;
       }
 
       #container[hidden] {
@@ -110,7 +110,21 @@ scary-cookie-consent {
          */
         consent: {
           type: Boolean,
-          notify: true
+          notify: true,
+          value: false
+        },
+
+        /**
+         * Will be true if a user closes the cookie-consent bar,
+         * without accepting the cookie policy.
+         *
+         * @attribute dismissed
+         * @type boolean
+         */
+        dismissed: {
+          type: Boolean,
+          notify: true,
+          value: false
         },
 
         /**
@@ -221,7 +235,6 @@ scary-cookie-consent {
       _giveConsent: function () {
         this.$.cookie.value = '1';
         this.consent = true;
-        this.dismissed = true;
         this.fire('consent-given');
       },
 
@@ -229,7 +242,6 @@ scary-cookie-consent {
         if (this.$.cookie.value) {
           this.consent = true;
           this.fire('consent-given');
-          this.dismissed = true;
         } else {
           this.consent = false;
         }

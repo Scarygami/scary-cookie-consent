@@ -5,7 +5,7 @@
 Element to make it easier for you to display those annoying cookie message
 you need to have when hosting a website in the EU.
 
-You define your custom cookie message as content of the `cookie-consent` element.
+You define your custom cookie message as content of the `scary-cookie-consent` element.
 
 The message will contain a confirm and deny button. If you provide a `policy` link, an extra button will link to it.
 
@@ -20,7 +20,7 @@ scary-cookie-consent {
 }
 ```
 
-You can style the look of the `cookie-consent` toolbar using the
+You can style the look of the `scary-cookie-consent` toolbar using the
 `--cookie-consent-toolbar` CSS mixin or the `--cookie-consent-background`
 and `--cookie-consent-color` custom properties
 
