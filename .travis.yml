@@ -8,18 +8,16 @@ addons:
   apt:
     sources:
     - google-chrome
-    - ubuntu-toolchain-r-test
     packages:
     - google-chrome-stable
-    - g++-4.8
 before_script:
-- npm install -g bower polylint web-component-tester
-- bower install
-- polylint -i scary-cookie-consent.html --no-recursion
+  - npm install -g polymer-cli
+  - polymer install --variants
 script:
-- xvfb-run wct
-- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce -s 'default';
-  fi
+  - xvfb-run polymer test
+  - >-
+    if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then polymer test -s 'default';
+    fi
 env:
   global:
   - CXX=g++-4.8

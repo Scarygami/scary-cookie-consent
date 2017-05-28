@@ -72,7 +72,7 @@ scary-cookie-consent {
       }
 
       #info {
-        @apply(--layout-flex);
+        @apply --layout-flex;
       }
 
       a {
@@ -88,7 +88,7 @@ scary-cookie-consent {
                   secure="[[cookieSecure]]"></scary-cookie>
 
     <div id="container" hidden$="[[_isToolbarHidden(consent, dismissed)]]">
-      <span id="info" class="flex"><content></content></span>
+      <span id="info" class="flex"><slot></slot></span>
       <template is="dom-if" if="[[_hasPolicy(policy)]]">
         <a href="{{policy}}" tabindex="-1"><paper-icon-button icon="cookie:info"></paper-icon-button></a>
       </template>
