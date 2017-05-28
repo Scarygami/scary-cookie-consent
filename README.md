@@ -1,6 +1,7 @@
 # scary-cookie-consent
 
 [![Build Status](https://travis-ci.org/Scarygami/scary-cookie-consent.svg?branch=master)](https://travis-ci.org/Scarygami/scary-cookie-consent)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/Scarygami/scary-cookie-consent)
 
 Element to make it easier for you to display those annoying cookie message
 you need to have when hosting a website in the EU.
