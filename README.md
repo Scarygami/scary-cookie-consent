@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Scarygami/scary-cookie-consent.svg?branch=master)](https://travis-ci.org/Scarygami/scary-cookie-consent)
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/Scarygami/scary-cookie-consent)
+![Vaadin Directory availability](https://img.shields.io/badge/Vaadin%20Directory-available-green.svg?style=flat-square&colorB=00b4f0&link=https://vaadin.com/directory)
 
 Element to make it easier for you to display those annoying cookie message
 you need to have when hosting a website in the EU.
